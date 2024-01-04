@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -58,5 +60,35 @@ public class UserDaoImpl implements UserDao {
             throw new RuntimeException("Ошибка при селекте %s".formatted(e.getMessage()));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public List<User> getUsersByFirstNameAndLastName(String firstName, String lastName) {
+        String sql = "SELECT * FROM users WHERE first_name LIKE ? AND last_name LIKE ? ORDER BY id";
+        List<User> users = new ArrayList<>();
+
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, firstName);
+            pstmt.setString(2, lastName);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    User user = new User();
+                    user.setId(rs.getLong("id"));
+                    user.setFirstName(rs.getString("first_name"));
+                    user.setLastName(rs.getString("last_name"));
+                    user.setAge(rs.getInt("age"));
+                    user.setGender(rs.getString("gender"));
+                    user.setInterests(rs.getString("interests"));
+                    user.setCity(rs.getString("city"));
+                    users.add(user);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при поиске пользователей: %s".formatted(e.getMessage()));
+        }
+
+        return users;
     }
 }

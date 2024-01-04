@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.socialnetwork.model.User;
 import ru.socialnetwork.service.UserService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -22,5 +24,12 @@ public class UserController {
     @GetMapping("/get/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(id));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<User>> getUsersBeLike(
+            @RequestParam String firstName,
+            @RequestParam String secondName) {
+        return ResponseEntity.ok(userService.getUsersByFirstNameAndLastName(firstName, secondName));
     }
 }

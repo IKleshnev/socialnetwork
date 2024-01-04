@@ -14,21 +14,31 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/user/register", "/user/get/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginProcessingUrl("/login")
-                        .permitAll()
-                )
-                .csrf().disable();
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()) // Разрешаем все запросы
+                .formLogin().disable() // Отключаем форму входа
+                .csrf().disable(); // Отключаем CSRF защиту
 
         return http.build();
     }
+
+
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .authorizeHttpRequests(auth -> auth.requestMatchers("/user/register", "/user/get/**").hasRole("ADMIN")
+//                        .anyRequest().authenticated()
+//                )
+//                .formLogin(form -> form
+//                        .loginProcessingUrl("/login")
+//                        .permitAll()
+//                )
+//                .csrf().disable();
+//
+//        return http.build();
+//    }
 
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
