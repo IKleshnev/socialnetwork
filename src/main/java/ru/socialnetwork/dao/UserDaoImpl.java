@@ -2,6 +2,7 @@ package ru.socialnetwork.dao;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.socialnetwork.model.User;
 
 import javax.sql.DataSource;
@@ -19,6 +20,7 @@ public class UserDaoImpl implements UserDao {
     private final DataSource dataSource;
 
     @Override
+    @Transactional
     public void createUser(User user) {
         String sql = "INSERT INTO users (first_name, last_name, age, gender, interests, city) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = dataSource.getConnection();
@@ -36,6 +38,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> getUserById(Long id) {
         String sql = "SELECT * FROM users WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
@@ -63,6 +66,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> getUsersByFirstNameAndLastName(String firstName, String lastName) {
         String sql = "SELECT * FROM users WHERE first_name LIKE ? AND last_name LIKE ? ORDER BY id";
         List<User> users = new ArrayList<>();
